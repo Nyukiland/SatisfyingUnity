@@ -8,6 +8,8 @@ public delegate void RightMouseClickReleased();
 
 public class MouseControl : MonoBehaviour
 {
+	public static MouseControl Instance;
+
 	[ReadOnly]
 	public Vector2 _mousePosition;
 
@@ -19,6 +21,11 @@ public class MouseControl : MonoBehaviour
 	private Camera _cam;
 	private bool _isLeftClick;
 	private bool _isRightClick;
+
+	private void Awake()
+	{
+		Instance = this;
+	}
 
 	private void Start()
 	{

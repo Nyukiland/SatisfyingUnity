@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChangeSize : MonoBehaviour
+public class ChangeSize : Activable
 {
 	private float _sizeToGo;
 	private float _curSize;
@@ -17,7 +17,7 @@ public class ChangeSize : MonoBehaviour
     {
 		if (_curSize == _sizeToGo) return;
 
-		float speed = 0.5f;
+		float speed = 2;
 		float dif = (_sizeToGo - _curSize);
 		_curSize += dif * Time.deltaTime * speed;
 
@@ -25,9 +25,10 @@ public class ChangeSize : MonoBehaviour
 		transform.localScale = Vector3.one * _curSize;
     }
 
-	public void CallChangeSize(float newSize)
+	public override void BaseInteraction(float value)
 	{
-		_prevSize = newSize;
-		_sizeToGo = newSize;
+		base.BaseInteraction(value);
+		_prevSize = transform.localScale.x;
+		_sizeToGo = value;
 	}
 }
