@@ -17,7 +17,7 @@ public class ChangeSize : Activable
     {
 		if (_curSize == _sizeToGo) return;
 
-		float speed = 2;
+		float speed = 5f;
 		float dif = (_sizeToGo - _curSize);
 		_curSize += dif * Time.deltaTime * speed;
 

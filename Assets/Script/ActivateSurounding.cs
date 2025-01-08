@@ -17,6 +17,7 @@ public class ActivateSurounding : ReceiveInput
         foreach (Activable a in _activables)
 		{
 			float dist = Vector3.Distance(a.transform.position, transform.position);
+			dist = Mathf.Clamp(dist, 0, _radius);
 
 			if (dist > _radius) continue;
 
