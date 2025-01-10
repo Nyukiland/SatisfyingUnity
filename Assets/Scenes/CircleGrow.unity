@@ -3027,6 +3027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _radius: 7.5
+  _invertScale: 1
 --- !u!1 &763852985
 GameObject:
   m_ObjectHideFlags: 0

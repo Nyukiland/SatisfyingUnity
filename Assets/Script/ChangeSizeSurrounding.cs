@@ -1,9 +1,12 @@
 using UnityEngine;
 
-public class ActivateSurounding : ReceiveInput
+public class ChangeSizeSurrounding : ReceiveInput
 {
 	[SerializeField]
 	float _radius;
+
+	[SerializeField]
+	bool _invertScale;
 
 	Activable[] _activables;
 
@@ -22,7 +25,9 @@ public class ActivateSurounding : ReceiveInput
 			if (dist > _radius) continue;
 
 			float value = Mathf.InverseLerp(0, _radius, dist);
-			
+
+			if (_invertScale) value = Mathf.Abs(value - 1);
+
 			a.BaseInteraction(value);
 		}
     }
