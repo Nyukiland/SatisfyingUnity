@@ -8,6 +8,9 @@ public class ChangeSizeSurrounding : ReceiveInput
 	[SerializeField]
 	bool _invertScale;
 
+	[SerializeField]
+	AnimationCurve _curve;
+
 	Activable[] _activables;
 
 	private void Start()
@@ -28,7 +31,7 @@ public class ChangeSizeSurrounding : ReceiveInput
 
 			if (_invertScale) value = Mathf.Abs(value - 1);
 
-			a.BaseInteraction(value);
+			a.BaseInteraction(_curve.Evaluate(value));
 		}
     }
 }

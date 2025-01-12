@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectFollow : MonoBehaviour
+public class ObjectFollowCursor : MonoBehaviour
 {
 	private MouseControl _mouseControl;
 
