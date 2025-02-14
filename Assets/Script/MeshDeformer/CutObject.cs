@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CutObject : MonoBehaviour
 {
-	private MeshCollider _storedCollider;
-	private MeshFilter _storedMeshVisu;
+	private List<MeshCollider> _storedCollider = new();
+	private List<MeshFilter> _storedMeshVisu = new();
 	private List<Vector3> _hitPoint = new();
 
 	private void Update()
@@ -29,17 +29,15 @@ public class CutObject : MonoBehaviour
 
 	private void RegisterCutInfo(RaycastHit hit)
 	{
-		if (_storedMeshVisu == null)
-		{
-			_storedMeshVisu = hit.collider.GetComponent<MeshFilter>();
-			_storedCollider = hit.collider.GetComponent<MeshCollider>();
+		MeshFilter filter = hit.collider.GetComponent<MeshFilter>();
+		MeshCollider col = hit.collider.GetComponent<MeshCollider>();
 
-			if (_storedMeshVisu == null || _storedCollider == null)
-			{
-				_storedCollider = null;
-				_storedMeshVisu = null;
-				return;
-			}
+		if (filter == null || col == null) return;
+
+		if (!_storedMeshVisu.Contains(filter))
+		{
+			_storedMeshVisu.Add(filter);
+			_storedCollider.Add(col);
 		}
 
 		_hitPoint.Add(hit.point);
@@ -49,11 +47,23 @@ public class CutObject : MonoBehaviour
 	{
 		if (_storedMeshVisu == null || _storedCollider == null || _hitPoint.Count < 2) return;
 
+		for (int i = 0; i < _storedMeshVisu.Count; i++)
+		{
+			CutIndividualObject(_storedMeshVisu[i], _storedCollider[i]);
+		}
 
+		// Clear stored data
+		_hitPoint.Clear();
+		_storedCollider.Clear();
+		_storedMeshVisu.Clear();
+	}
+
+	private void CutIndividualObject(MeshFilter filter, MeshCollider col)
+	{
 		Vector3 planeNormal = Vector3.Cross((_hitPoint[_hitPoint.Count - 1] - _hitPoint[0]).normalized, transform.forward).normalized;
 		Plane cuttingPlane = new Plane(planeNormal, _hitPoint[0]);
 
-		Mesh originalMesh = _storedMeshVisu.mesh;
+		Mesh originalMesh = filter.mesh;
 		List<Vector3> vertices = new List<Vector3>(originalMesh.vertices);
 		List<int> triangles = new List<int>(originalMesh.triangles);
 
@@ -69,9 +79,9 @@ public class CutObject : MonoBehaviour
 			Vector3 v3 = vertices[triangles[i + 2]];
 
 			// Determine on which side of the plane the vertices are
-			bool side1 = cuttingPlane.GetSide(_storedMeshVisu.transform.TransformPoint(v1));
-			bool side2 = cuttingPlane.GetSide(_storedMeshVisu.transform.TransformPoint(v2));
-			bool side3 = cuttingPlane.GetSide(_storedMeshVisu.transform.TransformPoint(v3));
+			bool side1 = cuttingPlane.GetSide(filter.transform.TransformPoint(v1));
+			bool side2 = cuttingPlane.GetSide(filter.transform.TransformPoint(v2));
+			bool side3 = cuttingPlane.GetSide(filter.transform.TransformPoint(v3));
 
 			// Store vertices in the corresponding list
 			if (side1 && side2 && side3)
@@ -103,21 +113,16 @@ public class CutObject : MonoBehaviour
 		mesh2.triangles = CalculateTriangles(newVertices2);
 
 		// Assign the first half to the original object
-		_storedMeshVisu.mesh = mesh1;
-		_storedCollider.sharedMesh = mesh1;
+		filter.mesh = mesh1;
+		col.sharedMesh = mesh1;
 
 		// Create a new GameObject for the second half
-		GameObject secondHalf = Instantiate(_storedMeshVisu.gameObject, _storedMeshVisu.transform.position, _storedMeshVisu.transform.rotation);
-		if (_storedMeshVisu.transform.parent != null) secondHalf.transform.parent = _storedMeshVisu.transform.parent.transform;
-		secondHalf.transform.localScale = _storedMeshVisu.transform.localScale;
+		GameObject secondHalf = Instantiate(filter.gameObject, filter.transform.position, filter.transform.rotation);
+		if (filter.transform.parent != null) secondHalf.transform.parent = filter.transform.parent.transform;
+		secondHalf.transform.localScale = filter.transform.localScale;
 		secondHalf.name = "second half";
 		secondHalf.GetComponent<MeshFilter>().mesh = mesh2;
 		secondHalf.GetComponent<MeshCollider>().sharedMesh = mesh2;
-
-		// Clear stored data
-		_hitPoint.Clear();
-		_storedCollider = null;
-		_storedMeshVisu = null;
 	}
 
 	private void SplitTriangle(Vector3 v1, Vector3 v2, Vector3 v3, bool side1, bool side2, bool side3,
