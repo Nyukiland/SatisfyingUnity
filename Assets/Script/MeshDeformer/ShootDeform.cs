@@ -31,6 +31,9 @@ public class ShootDeform : MonoBehaviour
 	{
 		MeshFilter meshFilter = targetObject.GetComponent<MeshFilter>();
 		MeshCollider meshCollider = targetObject.GetComponent<MeshCollider>();
+		meshCollider.convex = false;
+
+		if (hitTriangleIndex < 0) return;
 
 		Mesh mesh = meshFilter.mesh;
 		Vector3[] vertices = mesh.vertices;
@@ -41,6 +44,7 @@ public class ShootDeform : MonoBehaviour
 
 		//--------------------------
 		// Get the vertices of the impacted face
+		UnityEngine.Debug.Log($"{triangles.Length} / {hitTriangleIndex*3}");
 		int index0 = triangles[hitTriangleIndex * 3];
 		int index1 = triangles[hitTriangleIndex * 3 + 1];
 		int index2 = triangles[hitTriangleIndex * 3 + 2];
@@ -71,6 +75,7 @@ public class ShootDeform : MonoBehaviour
 			meshCollider.sharedMesh = null;
 			meshCollider.sharedMesh = mesh;
 		}
+		meshCollider.convex = true;
 	}
 
 	private bool MoveVertice(ref Vector3 verticePos, Vector3 hitPoint, Vector3 normal, GameObject targetObject)
