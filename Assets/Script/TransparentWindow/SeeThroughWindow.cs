@@ -83,7 +83,7 @@ public class SeeThroughWindow : MonoBehaviour
 
 	public void RegisterElement(RectTransform transform)
 	{
-		objectOnScreen.Add(transform);
+		if (!objectOnScreen.Contains(transform)) objectOnScreen.Add(transform);
 	}
 
 	private void Update()
